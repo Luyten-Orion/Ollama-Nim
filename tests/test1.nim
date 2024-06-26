@@ -13,3 +13,6 @@ var client = OllmClient()
 
 test "Ollama Generate":
   echo client.generate(OllmGenerateRequest(model: "stuehieyr/nandine:latest", prompt: "Hello"))
+
+test "Ollama Chat":
+  echo client.chat(OllmChatRequest(model: "stuehieyr/nandine:latest", messages: @[OllmMessage(role: User, content: "Hello")]))
