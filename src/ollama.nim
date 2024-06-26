@@ -53,13 +53,12 @@ type
   OllmGenerateResponse* = object
     model* {.json: ",required".}: string
     createdAtStr {.json: "created_at,required".}: string
-    #createdAt* {.json: "-".}: DateTime # https://github.com/guzba/sunny/issues/10
+    createdAt* {.json: "-".}: DateTime
     response* {.json: ",required".}: string
     case done*: bool
       of true:
         totalDuration* {.json: "total_duration,required".}: int64
         loadDuration* {.json: "load_duration,required".}: int64
-        promptEvalCount* {.json: "prompt_eval_count,required".}: int64
         promptEvalDuration* {.json: "prompt_eval_duration,required".}: int64
         evalCount* {.json: "eval_count,required".}: int64
         evalDuration* {.json: "eval_duration,required".}: int64
@@ -70,15 +69,13 @@ type
 # Helper procs
 proc parseOllamaTimestamp(s: string): DateTime {.inline.} =
   ## Parses timestamps in the format Ollama likes to give
-  parse(s, "yyyy-MM-dd'T'HH:mm:ss'.'ffffffzzz")
+  parse(s, "yyyy-MM-dd'T'HH:mm:ss'.'fffffffffzzz")
 
-#[
 proc fromJson(v: var OllmGenerateResponse, value: JsonValue, input: string) =
   sunny.fromJson(v, value, input)
   v.createdAt = parseOllamaTimestamp(v.createdAtStr)
-]#
 
-proc createdAt*(v: OllmGenerateResponse): DateTime = parseOllamaTimestamp(v.createdAtStr)
+#proc createdAt*(v: OllmGenerateResponse): DateTime = parseOllamaTimestamp(v.createdAtStr)
 
 proc generate*(client: OllmClient, req: sink OllmGenerateRequest): OllmGenerateResponse =
   ## Makes a request to the Ollama API to generate a response to the given input.
